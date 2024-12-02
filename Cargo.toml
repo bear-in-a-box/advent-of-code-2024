@@ -7,6 +7,5 @@ edition = "2021"
 
 [features]
 day01 = []
-
-[profile.dev]
-opt-level = 3
+day02 = []
+default = ["day02"]
