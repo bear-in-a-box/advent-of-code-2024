@@ -15,7 +15,12 @@ mod day02;
 #[cfg(feature = "day02")]
 use day02 as day;
 
-#[cfg(not(any(feature = "day01", feature = "day02")))]
+#[cfg(feature = "day03")]
+mod day03;
+#[cfg(feature = "day03")]
+use day03 as day;
+
+#[cfg(not(any(feature = "day01", feature = "day02", feature = "day03")))]
 mod day {
     const INFO: &'static str = "No day specified";
     pub fn part1() -> &'static str {
