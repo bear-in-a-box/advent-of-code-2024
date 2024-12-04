@@ -1,3 +1,4 @@
+mod enums;
 mod tools;
 
 fn main() {
@@ -20,7 +21,17 @@ mod day03;
 #[cfg(feature = "day03")]
 use day03 as day;
 
-#[cfg(not(any(feature = "day01", feature = "day02", feature = "day03")))]
+#[cfg(feature = "day04")]
+mod day04;
+#[cfg(feature = "day04")]
+use day04 as day;
+
+#[cfg(not(any(
+    feature = "day01",
+    feature = "day02",
+    feature = "day03",
+    feature = "day04"
+)))]
 mod day {
     const INFO: &'static str = "No day specified";
     pub fn part1() -> &'static str {
