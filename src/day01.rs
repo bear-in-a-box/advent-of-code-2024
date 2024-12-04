@@ -41,3 +41,16 @@ pub fn part2() -> i32 {
         })
         .sum()
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn part1() {
+        println!("{}", super::part1());
+    }
+
+    #[test]
+    fn part2() {
+        println!("{}", super::part2());
+    }
+}

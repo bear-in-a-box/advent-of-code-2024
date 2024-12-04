@@ -1,43 +1,11 @@
+#![allow(dead_code)]
+
 mod enums;
 mod tools;
 
-fn main() {
-    println!("Part 1: {}", day::part1());
-    println!("Part 2: {}", day::part2());
-}
+fn main() {}
 
-#[cfg(feature = "day01")]
 mod day01;
-#[cfg(feature = "day01")]
-use day01 as day;
-
-#[cfg(feature = "day02")]
 mod day02;
-#[cfg(feature = "day02")]
-use day02 as day;
-
-#[cfg(feature = "day03")]
 mod day03;
-#[cfg(feature = "day03")]
-use day03 as day;
-
-#[cfg(feature = "day04")]
 mod day04;
-#[cfg(feature = "day04")]
-use day04 as day;
-
-#[cfg(not(any(
-    feature = "day01",
-    feature = "day02",
-    feature = "day03",
-    feature = "day04"
-)))]
-mod day {
-    const INFO: &'static str = "No day specified";
-    pub fn part1() -> &'static str {
-        INFO
-    }
-    pub fn part2() -> &'static str {
-        INFO
-    }
-}

@@ -52,3 +52,16 @@ pub fn part2() -> i32 {
 
     result
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn part1() {
+        println!("{}", super::part1());
+    }
+
+    #[test]
+    fn part2() {
+        println!("{}", super::part2());
+    }
+}

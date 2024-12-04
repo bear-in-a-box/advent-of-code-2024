@@ -96,3 +96,16 @@ pub fn part1() -> u32 {
 pub fn part2() -> u32 {
     Solution::from_str(&read_input()).unwrap().part2()
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn part1() {
+        println!("{}", super::part1());
+    }
+
+    #[test]
+    fn part2() {
+        println!("{}", super::part2());
+    }
+}
