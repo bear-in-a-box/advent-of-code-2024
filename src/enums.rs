@@ -1,6 +1,6 @@
 use std::slice::Iter;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Direction {
     N,
     NE,

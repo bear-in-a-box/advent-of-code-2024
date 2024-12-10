@@ -1,15 +1,24 @@
 use std::collections::HashSet;
 use std::{str::FromStr, string::ParseError};
 
+use rayon::prelude::*;
+
 use crate::enums::Direction;
 use crate::tools;
 
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Debug)]
+enum StepResult {
+    Loop,
+    Continue,
+    Quit,
+}
+
+#[derive(Clone, Debug)]
 struct Ship {
     x: usize,
     y: usize,
     direction: Direction,
-    visited: HashSet<(usize, usize)>,
+    visited: HashSet<(usize, usize, Direction)>,
 }
 impl Ship {
     fn init(x: usize, y: usize) -> Self {
@@ -19,6 +28,11 @@ impl Ship {
             direction: Direction::N,
             visited: HashSet::new(),
         }
+    }
+
+    fn report_visit(&mut self) {
+        self.visited
+            .insert((self.x.clone(), self.y.clone(), self.direction.clone()));
     }
 
     fn rotate(&mut self) {
@@ -32,7 +46,6 @@ impl Ship {
     }
 
     fn go(&mut self) {
-        self.visited.insert((self.x, self.y));
         match self.direction {
             Direction::N => self.y -= 1,
             Direction::E => self.x += 1,
@@ -42,12 +55,12 @@ impl Ship {
         }
     }
 
-    fn get_distance_traveled(&self) -> usize {
-        self.visited.len()
+    fn get_travel_coverage(&self) -> HashSet<(usize, usize)> {
+        self.visited.iter().map(|(x, y, _)| (*x, *y)).collect()
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Universe {
     data: Vec<Vec<char>>,
 }
@@ -60,7 +73,7 @@ impl Universe {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Data {
     universe: Universe,
     ship: Ship,
@@ -96,50 +109,75 @@ impl FromStr for Data {
 }
 
 impl Data {
-    fn step(&mut self) -> bool {
-        let next = match self.ship.direction {
-            Direction::N => self
-                .universe
-                .get(self.ship.x as i32, self.ship.y as i32 - 1),
-            Direction::E => self
-                .universe
-                .get(self.ship.x as i32 + 1, self.ship.y as i32),
-            Direction::S => self
-                .universe
-                .get(self.ship.x as i32, self.ship.y as i32 + 1),
-            Direction::W => self
-                .universe
-                .get(self.ship.x as i32 - 1, self.ship.y as i32),
-            _ => '#',
+    fn step(&mut self) -> StepResult {
+        if self
+            .ship
+            .visited
+            .contains(&(self.ship.x, self.ship.y, self.ship.direction))
+        {
+            return StepResult::Loop;
+        }
+        self.ship.report_visit();
+        let (nx, ny) = match self.ship.direction {
+            Direction::N => (self.ship.x as i32, self.ship.y as i32 - 1),
+            Direction::E => (self.ship.x as i32 + 1, self.ship.y as i32),
+            Direction::S => (self.ship.x as i32, self.ship.y as i32 + 1),
+            Direction::W => (self.ship.x as i32 - 1, self.ship.y as i32),
+            _ => (self.ship.x as i32, self.ship.y as i32),
         };
+        let next = self.universe.get(nx, ny);
+
         match next {
-            'X' => {
-                return true;
-            }
+            'X' => return StepResult::Quit,
             '#' => self.ship.rotate(),
             '.' => self.ship.go(),
             _ => {}
         };
-        false
+        StepResult::Continue
     }
-}
-
-fn read_input() -> String {
-    tools::read_file("06", false)
 }
 
 pub fn part1() -> usize {
     let mut data = Data::from_str(&read_input()).unwrap();
     loop {
-        if data.step() {
+        if data.step() == StepResult::Quit {
             break;
         }
     }
-    data.ship.get_distance_traveled() + 1
+    data.ship.get_travel_coverage().len()
 }
 
-pub fn part2() -> u32 {
-    0
+pub fn part2() -> usize {
+    let base = Data::from_str(&read_input()).unwrap();
+    let mut regular_path = base.clone();
+    loop {
+        if regular_path.step() == StepResult::Quit {
+            break;
+        }
+    }
+    regular_path
+        .ship
+        .get_travel_coverage()
+        .par_iter()
+        .filter_map(|&(x, y)| {
+            let mut candidate = base.clone();
+            if (x, y) != (base.ship.x, base.ship.y) {
+                candidate.universe.data[y][x] = '#';
+            }
+            loop {
+                match candidate.step() {
+                    StepResult::Loop => return Some((x, y)),
+                    StepResult::Quit => break,
+                    _ => {}
+                }
+            }
+            None
+        })
+        .count()
+}
+
+fn read_input() -> String {
+    tools::read_file("06", false)
 }
 
 #[cfg(test)]
