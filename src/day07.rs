@@ -10,7 +10,7 @@ enum Operation {
     Multiply,
 }
 
-fn check(expected: u128, so_far: u128, data_left: &[u32]) -> u128 {
+fn check(expected: u128, so_far: u128, data_left: &[u32], with_concat: bool) -> u128 {
     if data_left.len() == 0 {
         return if so_far == expected { 1 } else { 0 };
     }
@@ -18,22 +18,34 @@ fn check(expected: u128, so_far: u128, data_left: &[u32]) -> u128 {
         return 0;
     }
     let mut result: u128 = 0;
-    result += check(expected, so_far + data_left[0] as u128, &data_left[1..]);
-    result += check(expected, so_far * data_left[0] as u128, &data_left[1..]);
+    result += check(
+        expected,
+        so_far + data_left[0] as u128,
+        &data_left[1..],
+        with_concat,
+    );
+    result += check(
+        expected,
+        so_far * data_left[0] as u128,
+        &data_left[1..],
+        with_concat,
+    );
+    if with_concat {
+        let new_so_far = so_far * 10u128.pow(data_left[0].ilog10() + 1) + data_left[0] as u128;
+        result += check(expected, new_so_far, &data_left[1..], with_concat);
+    }
     result
 }
 
-fn calculate_calibration_result((expected, data): &Equation) -> u128 {
-    let result = check(*expected, 0, &data[..]);
-    // println!("result for {} and {:?} = {}", expected, data, result);
-    result
+fn calculate_calibration_result((expected, data): &Equation, with_concat: bool) -> u128 {
+    check(*expected, 0, &data[..], with_concat)
 }
 
-pub fn part1() -> u128 {
+pub fn work(with_concat: bool) -> u128 {
     read_input()
         .par_iter()
         .map(|data| {
-            let result = calculate_calibration_result(data);
+            let result = calculate_calibration_result(data, with_concat);
             if result == 0 {
                 0
             } else {
@@ -43,8 +55,12 @@ pub fn part1() -> u128 {
         .sum()
 }
 
-pub fn part2() -> usize {
-    0
+fn part1() -> u128 {
+    work(false)
+}
+
+fn part2() -> u128 {
+    work(true)
 }
 
 fn read_input() -> Input {
