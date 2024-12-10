@@ -5,11 +5,6 @@ use crate::tools;
 type Equation = (u128, Vec<u32>);
 type Input = Vec<Equation>;
 
-enum Operation {
-    Add,
-    Multiply,
-}
-
 fn check(expected: u128, so_far: u128, data_left: &[u32], with_concat: bool) -> u128 {
     if data_left.len() == 0 {
         return if so_far == expected { 1 } else { 0 };
