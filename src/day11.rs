@@ -1,30 +1,45 @@
+use std::collections::HashMap;
+
 use crate::tools;
 
-fn blink(line: Vec<String>) -> Vec<String> {
-    line.iter()
-        .flat_map(|item| {
-            if item == "0" {
-                return vec!["1".to_string()].into_iter();
-            }
-            if item.len() % 2 == 0 {
-                let (left, right) = item.split_at(item.len() / 2);
-                let real_right = right.parse::<u64>().unwrap().to_string();
-                return vec![left.to_string(), real_right].into_iter();
-            }
-            let multiplied = (item.parse::<u128>().unwrap() * 2024).to_string();
-            vec![multiplied].into_iter()
-        })
-        .collect()
+fn blink(line: HashMap<String, u64>) -> HashMap<String, u64> {
+    let keys: Vec<_> = line.keys().cloned().collect();
+    let mut target: HashMap<String, u64> = HashMap::new();
+    for key in keys {
+        if key == "0" {
+            let zero = line.get("0").unwrap().clone();
+            *target.entry("1".to_string()).or_insert(0) += zero;
+        } else if key.len() % 2 == 0 {
+            let values = line.get(&key).unwrap().clone();
+            let (left, right) = key.split_at(key.len() / 2);
+            let real_right = right.parse::<u64>().unwrap().to_string();
+            *target.entry(left.to_string()).or_insert(0) += values;
+            *target.entry(real_right.to_string()).or_insert(0) += values;
+        } else {
+            let values = line.get(&key).unwrap().clone();
+            let multiplied = (key.parse::<u128>().unwrap() * 2024).to_string();
+            *target.entry(multiplied).or_insert(0) += values;
+        }
+    }
+    target
 }
 
-fn part1() -> usize {
+fn work(blinks: usize) -> u64 {
     let line = read_input();
-    let result = (0..25).fold(line, |l, _| blink(l));
-    result.len()
+    let mut data: HashMap<String, u64> = HashMap::new();
+    for item in line {
+        *data.entry(item).or_insert(0) += 1;
+    }
+    let result = (0..blinks).fold(data, |d, _| blink(d));
+    result.values().sum()
 }
 
-fn part2() -> usize {
-    0
+fn part1() -> u64 {
+    work(25)
+}
+
+fn part2() -> u64 {
+    work(75)
 }
 
 fn read_input() -> Vec<String> {
