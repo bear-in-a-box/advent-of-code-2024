@@ -62,8 +62,46 @@ fn part1() -> u64 {
     calculate_checksum(result)
 }
 
-fn part2() -> usize {
-    0
+fn part2() -> u64 {
+    let entries = read_entries();
+    let mut result: Vec<Entry> = Vec::new();
+    result.push(entries[0]);
+
+    let mut filled: Vec<Entry> = entries
+        .iter()
+        .filter(|e| e.id.is_some())
+        .skip(1)
+        .map(|e| e.to_owned())
+        .collect();
+    let mut empty: Vec<Entry> = entries
+        .iter()
+        .filter(|e| e.id.is_none())
+        .map(|e| e.to_owned())
+        .collect();
+
+    while let Some(item) = filled.pop() {
+        let Some(gap_index) = empty
+            .iter()
+            .position(|&e| e.length >= item.length && e.position < item.position)
+        else {
+            result.push(item);
+            continue;
+        };
+        let gap = &mut empty[gap_index];
+        result.push(Entry {
+            id: item.id,
+            position: gap.position,
+            length: item.length,
+        });
+        if gap.length == item.length {
+            empty.remove(gap_index);
+        } else {
+            gap.length -= item.length;
+            gap.position += item.length;
+        }
+    }
+
+    calculate_checksum(result)
 }
 
 fn calculate_checksum(entries: Vec<Entry>) -> u64 {
