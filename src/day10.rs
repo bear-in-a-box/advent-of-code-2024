@@ -43,8 +43,9 @@ impl FromStr for Area {
     }
 }
 impl Area {
-    fn go(&self, start: &(usize, usize)) -> usize {
+    fn go(&self, start: &(usize, usize)) -> (usize, u64) {
         let mut ending_points: HashSet<(usize, usize)> = HashSet::new();
+        let mut endings: u64 = 0;
         let mut queue: VecDeque<(usize, usize)> = VecDeque::new();
         queue.push_back(start.clone());
         while let Some((x, y)) = queue.pop_back() {
@@ -53,6 +54,7 @@ impl Area {
             };
             if *v == 9 {
                 ending_points.insert((x, y));
+                endings += 1;
                 continue;
             }
             let next = *v + 1;
@@ -77,11 +79,15 @@ impl Area {
                 }
             }
         }
-        ending_points.len()
+        (ending_points.len(), endings)
     }
 
     fn part1(&self) -> usize {
-        self.starting_points.iter().map(|p| self.go(p)).sum()
+        self.starting_points.iter().map(|p| self.go(p).0).sum()
+    }
+
+    fn part2(&self) -> u64 {
+        self.starting_points.iter().map(|p| self.go(p).1).sum()
     }
 }
 
@@ -90,7 +96,7 @@ fn part1() -> usize {
 }
 
 fn part2() -> u64 {
-    0
+    read_input().part2()
 }
 
 fn read_input() -> Area {
