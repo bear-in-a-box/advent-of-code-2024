@@ -34,11 +34,11 @@ fn work(blinks: usize) -> u64 {
     result.values().sum()
 }
 
-fn part1() -> u64 {
+pub fn part1() -> u64 {
     work(25)
 }
 
-fn part2() -> u64 {
+pub fn part2() -> u64 {
     work(75)
 }
 

@@ -59,11 +59,11 @@ fn work(part2: bool) -> usize {
     universe.antinodes.len()
 }
 
-fn part1() -> usize {
+pub fn part1() -> usize {
     work(false)
 }
 
-fn part2() -> usize {
+pub fn part2() -> usize {
     work(true)
 }
 

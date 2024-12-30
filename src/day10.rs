@@ -91,11 +91,11 @@ impl Area {
     }
 }
 
-fn part1() -> usize {
+pub fn part1() -> usize {
     read_input().part1()
 }
 
-fn part2() -> u64 {
+pub fn part2() -> u64 {
     read_input().part2()
 }
 

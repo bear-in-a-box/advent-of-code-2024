@@ -9,7 +9,7 @@ struct Entry {
     id: Option<u64>,
 }
 
-fn part1() -> u64 {
+pub fn part1() -> u64 {
     let entries = read_entries();
     let mut result: Vec<Entry> = Vec::new();
     result.push(entries[0]);
@@ -62,7 +62,7 @@ fn part1() -> u64 {
     calculate_checksum(result)
 }
 
-fn part2() -> u64 {
+pub fn part2() -> u64 {
     let entries = read_entries();
     let mut result: Vec<Entry> = Vec::new();
     result.push(entries[0]);

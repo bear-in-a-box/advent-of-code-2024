@@ -50,11 +50,11 @@ pub fn work(with_concat: bool) -> u128 {
         .sum()
 }
 
-fn part1() -> u128 {
+pub fn part1() -> u128 {
     work(false)
 }
 
-fn part2() -> u128 {
+pub fn part2() -> u128 {
     work(true)
 }
 
